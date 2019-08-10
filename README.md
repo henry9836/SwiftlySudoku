@@ -1,2 +1,3 @@
 # SwiftlySudoku
-  Sudoku puzzle solver
+###### Henry Oliver
+  Sudoku puzzle solver written in Swift
