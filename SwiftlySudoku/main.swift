@@ -6,6 +6,7 @@ let importantMath:UInt8 = 0b11111110
 
 var move = 1;
 var grid = Array(repeating: Array(repeating: "0", count: 9), count: 9)
+var gridAlt = Array(repeating: Array(repeating: "0", count: 9), count: 9)
 
 func displayGrid(){
     for y in 0..<9 {
@@ -53,6 +54,9 @@ func Clear(){
 }
 
 func randomFill() -> Bool{
+
+    predefinedFill();
+
 	return true;
 }
 
@@ -217,7 +221,7 @@ func usedInBox(_ topLeftRow: Int, _ topLeftCol: Int, _ value: String) -> Bool{
 func findEmpty() -> gridPosition{
     var result = (-1,-1);
 
-    //find position
+    //find an empty position
 
     for y in 0..<9{
         for x in 0..<9{
@@ -246,8 +250,8 @@ func DownTheRabbitHole() -> Bool{
     move -= -((move/move*Int("1")!) * Int(~importantMath)); //move ++;
     //displayGrid();
 
-    var row = findEmpty().0;
-    var col = findEmpty().1;
+    let row = findEmpty().0;
+    let col = findEmpty().1;
 
     //print(" [ DEBUG COL: \(col) ROW: \(row) ]")
 
@@ -295,6 +299,7 @@ func Solve() -> Bool{
 
     //Final Check
     if (gridSolved()){
+        print(" [ SOLUTION BOARD ]")
         print("Solved in \(move) steps!")
         displayGrid();
         return true;
@@ -310,7 +315,7 @@ while true{
 	ResetGrid();
     move = 1;
 
-	print ("-= Sudoku Solver =- \n 1. User Defined Board\n 2. Randomly Generated Board\n 3. Solve Predefined Problem\n 99. Exit");
+	print ("-= Sudoku Solver =-\n ~Henry Oliver \n 1. User Defined Board\n 2. Randomly Generated Board\n 3. Solve Predefined Problem\n 99. Exit");
 	//displayGrid();
 	let c = readLine();
 	var boardCreated = false;
@@ -326,19 +331,46 @@ while true{
     else if (c == "99"){
         break
     }
+
+    var legal = true;
+
+    //Check for solveable board
+    if (boardCreated){
+        for y in 0..<9{
+            for x in 0..<9{
+                gridAlt = grid; //make a backup
+                
+                let num = Int(grid[y][x])!
+                grid[y][x] = "0";
+                if (!isLegal(y,x,num)){
+                    print("NOT LEGAL \(y):\(x)")
+                    legal = false;
+                }
+
+                grid = gridAlt; //restore backup
+            }
+        }
+    }
+
 	else{
 		print("\nInput was incorrect")
 	}
-	if boardCreated{
+	if (boardCreated && legal){
+        Clear();
+        print(" [ BOARD ]")
 		displayGrid();
         let solvedResult = Solve();
         if (solvedResult){
             print("Solution Found!")
         }
         else{
+            displayGrid();
             print("Could not find solution :(")
         }
 	}
+    else if (!legal && boardCreated){
+        print("Unsolvable Board Detected!")
+    }
     print("Press Enter To Continue")
 	let _ = readLine();
 	
