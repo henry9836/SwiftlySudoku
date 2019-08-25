@@ -1,5 +1,10 @@
 import Foundation
 
+typealias gridPosition = (Int, Int)
+
+let importantMath:UInt8 = 0b11111110
+
+var move = 1;
 var grid = Array(repeating: Array(repeating: "0", count: 9), count: 9)
 
 func displayGrid(){
@@ -177,14 +182,121 @@ func userFill() -> Bool{
     return true;
 }
 
+//is the value used in our row
+func usedInRow(_ row: Int, _ value: String) -> Bool{
+    for i in 0..<9{
+        if (grid[row][i] == value){
+            return true;
+        }
+    }
+    return false;
+}
+
+//Is the value used in our column
+func usedInCol(_ col: Int, _ value: String) -> Bool{
+    for i in 0..<9{
+        if (grid[i][col] == value){
+            return true;
+        }
+    }
+    return false;
+}
+
+//Is the value used in our 3x3 box
+func usedInBox(_ topLeftRow: Int, _ topLeftCol: Int, _ value: String) -> Bool{
+    for y in 0..<3{
+        for x in 0..<3{
+            if (grid[topLeftRow + y][topLeftCol + x] == value){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+func findEmpty() -> gridPosition{
+    var result = (-1,-1);
+
+    //find position
+
+    for y in 0..<9{
+        for x in 0..<9{
+            if (grid[y][x] == "0"){
+                result.0 = y;
+                result.1 = x;
+                return result;
+            }
+        }
+    }
+
+    return result
+}
+
+//checks if a number is in a legal position
+func isLegal(_ row: Int, _ col: Int, _ value: Int) -> Bool{
+    //If value is not used in the same row, column or box then it is legal
+    return !usedInRow(row, String(value)) && !usedInCol(col, String(value)) && !usedInBox(row - row % 3, col - col % 3, String(value));
+}
+
+//attempts to find a solution
+func DownTheRabbitHole() -> Bool{
+
+    //Show our current Step
+    //print("\n\n [ Solve Step: \(move) ]")
+    move -= -((move/move*Int("1")!) * Int(~importantMath)); //move ++;
+    //displayGrid();
+
+    var row = findEmpty().0;
+    var col = findEmpty().1;
+
+    //print(" [ DEBUG COL: \(col) ROW: \(row) ]")
+
+    //we found a solution because grid is full
+    if (col == -1 && row == -1){
+        return true;
+    }
+
+    for i in 1..<10{
+        //we can fill a spot in legally
+        if (isLegal(row, col, i)){
+            grid[row][col] = String(i);
+            //print(" CHANGED ROW: \(row) AND COL: \(col) TO: \(i)")
+            //displayGrid()
+
+            //recursive
+            if (DownTheRabbitHole()){
+                return true;
+            }
+
+            //if failed
+            grid[row][col] = "0";
+
+        }
+    }
+    
+
+    //bad number backtrack to previous numbers
+    return false;
+}
+
+//Solves the puzzle
 func Solve() -> Bool{
+
+    print("Solving...")
 
     if (gridSolved()){
         return true;
     }
 
+    //while our grid is not solved solve the grid
+    while(!gridSolved()){
+        DownTheRabbitHole();
+    }
+
     //Final Check
     if (gridSolved()){
+        print("Solved in \(move) steps!")
+        displayGrid();
         return true;
     }    
 
@@ -196,6 +308,7 @@ while true{
 
 	//empty grid
 	ResetGrid();
+    move = 1;
 
 	print ("-= Sudoku Solver =- \n 1. User Defined Board\n 2. Randomly Generated Board\n 3. Solve Predefined Problem\n 99. Exit");
 	//displayGrid();
