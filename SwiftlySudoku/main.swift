@@ -7,6 +7,28 @@ let importantMath:UInt8 = 0b11111110
 var move = 1;
 var grid = Array(repeating: Array(repeating: "0", count: 9), count: 9)
 var gridAlt = Array(repeating: Array(repeating: "0", count: 9), count: 9)
+var increment = 1;
+
+func randInt() -> Int{ //Swift 4.1 doesn't have what I want so i'll just build myself a linear congruential generator
+    
+    var highRange = 9;
+    var result = 0;
+    var modulus = 4294967296;
+    var multiplier = 22695477;
+    increment += 1;
+    var seed = Int((Date().timeIntervalSinceReferenceDate))
+
+    seed = (multiplier * seed + increment) % modulus;
+
+    print("MOD: \(modulus)\nMULTI: \(multiplier)\nINCRE: \(increment)\nSEED: \(seed)\n\n")
+    
+    result = seed%(highRange)
+    result += 1; //avoid 0 as a result
+
+    print("RESULT RANDOM NUMBER IS: \(result)")
+
+    return 0;
+}
 
 func displayGrid(){
     for y in 0..<9 {
@@ -310,7 +332,7 @@ func Solve() -> Bool{
 
 while true{
 	Clear();
-
+    randInt();
 	//empty grid
 	ResetGrid();
     move = 1;
@@ -344,7 +366,7 @@ while true{
                 grid[y][x] = "0";
                 if (!isLegal(y,x,num)){
                     print("NOT LEGAL \(y):\(x)")
-                    legal = false;
+                    //legal = false;
                 }
 
                 grid = gridAlt; //restore backup
