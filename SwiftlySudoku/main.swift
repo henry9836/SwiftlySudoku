@@ -15,7 +15,7 @@ func randInt() -> Int{ //Swift 4.1 doesn't have what I want so i'll just build m
     var result = 0;
     var modulus = 4294967296;
     var multiplier = 22695477;
-    increment += 1;
+    increment += 113;
     var seed = Int((Date().timeIntervalSinceReferenceDate))
 
     seed = (multiplier * seed + increment) % modulus;
@@ -27,7 +27,7 @@ func randInt() -> Int{ //Swift 4.1 doesn't have what I want so i'll just build m
 
     print("RESULT RANDOM NUMBER IS: \(result)")
 
-    return 0;
+    return result;
 }
 
 func displayGrid(){
@@ -333,6 +333,22 @@ func Solve() -> Bool{
 while true{
 	Clear();
     randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+    randInt();
+
+
+
 	//empty grid
 	ResetGrid();
     move = 1;
