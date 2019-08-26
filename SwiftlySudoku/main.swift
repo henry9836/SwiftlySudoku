@@ -1,14 +1,14 @@
 import Foundation
 
-typealias gridPosition = (Int, Int)
+typealias gridPosition = (Int, Int) //tuple to hold x and y
 
-let importantMath:UInt8 = 0b11111110
+let importantMath:UInt8 = 0b11111110 //used to increment a value
 
-var move = 1;
-var grid = Array(repeating: Array(repeating: "0", count: 9), count: 9)
-var gridAlt = Array(repeating: Array(repeating: "0", count: 9), count: 9)
-var increment = 1;
-let maxStep = 100000;
+var move = 1; //used to track recursive functions
+var grid = Array(repeating: Array(repeating: "0", count: 9), count: 9) //our board
+var gridAlt = Array(repeating: Array(repeating: "0", count: 9), count: 9) //backup board used for checks
+var increment = 1; //used for random numbers
+let maxStep = 100000; //used to stop recursive function
 
 
 //Name: randInt
