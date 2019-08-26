@@ -8,26 +8,49 @@ var move = 1;
 var grid = Array(repeating: Array(repeating: "0", count: 9), count: 9)
 var gridAlt = Array(repeating: Array(repeating: "0", count: 9), count: 9)
 var increment = 1;
+let maxStep = 100000;
 
-func randInt() -> Int{ //Swift 4.1 doesn't have what I want so i'll just build myself a linear congruential generator
-    
-    var highRange = 9;
+func randInt(_ highRange: Int) -> Int{ //Swift 4.1 doesn't have what I want so i'll just build myself a linear congruential generator
+
     var result = 0;
-    var modulus = 4294967296;
-    var multiplier = 22695477;
-    increment += 113;
-    var seed = Int((Date().timeIntervalSinceReferenceDate))
+    let modulus = 4294967296;
+    let multiplier = 22695477;
+    increment += 13;
+    //var seed = Int(Int((Date().timeIntervalSinceReferenceDate)))
+    let timeInSeconds: TimeInterval = Date().timeIntervalSince1970
+    let seed = timeInSeconds;
+    print("RAWTIME: \(timeInSeconds)")
 
-    seed = (multiplier * seed + increment) % modulus;
+    var iseed = Int((Double(multiplier) * seed + Double(increment))) % modulus;
 
     print("MOD: \(modulus)\nMULTI: \(multiplier)\nINCRE: \(increment)\nSEED: \(seed)\n\n")
     
-    result = seed%(highRange)
+    result = iseed%highRange
     result += 1; //avoid 0 as a result
 
     print("RESULT RANDOM NUMBER IS: \(result)")
 
     return result;
+}
+
+func isLegalBoard() -> Bool{
+    for y in 0..<9{
+        for x in 0..<9{
+            if (grid[y][x] != "0"){
+                gridAlt = grid; //make a backup
+                
+                let num = Int(grid[y][x])!
+                grid[y][x] = "0";
+                if (!isLegal(y,x,num)){
+                    print("NOT LEGAL \(y):\(x)")
+                    return false;
+                }
+
+                grid = gridAlt; //restore backup
+            }
+        }
+    }
+    return true;
 }
 
 func displayGrid(){
@@ -77,7 +100,33 @@ func Clear(){
 
 func randomFill() -> Bool{
 
-    predefinedFill();
+    let lpamount = randInt(8);
+    var lawyer = false;
+    
+    while !lawyer{
+    ResetGrid();
+    //fill in grid
+    for v in 0..<(3 + lpamount){
+        var placed = false
+        while(!placed){
+            let x = randInt(9)-1;
+            let y = randInt(9)-1;
+            let val = randInt(9);
+            let w = randInt(9000000)%9;
+            let strVal = String(val);
+            if (isLegal(y, x, val)){
+                print("Set \(y):\(x) to \(strVal) and werid thing is \(w)")
+                grid[y][x] = String(w)
+                displayGrid();
+                print("-----------------------------")
+                placed = true
+            }
+        }
+    }
+    lawyer = isLegalBoard();  
+    }
+
+    print("randomly done")
 
 	return true;
 }
@@ -278,7 +327,7 @@ func DownTheRabbitHole() -> Bool{
     //print(" [ DEBUG COL: \(col) ROW: \(row) ]")
 
     //we found a solution because grid is full
-    if (col == -1 && row == -1){
+    if (col == -1 && row == -1 || move > maxStep){
         return true;
     }
 
@@ -315,39 +364,31 @@ func Solve() -> Bool{
     }
 
     //while our grid is not solved solve the grid
-    while(!gridSolved()){
+    while(!gridSolved() && move < maxStep){
         DownTheRabbitHole();
     }
 
-    //Final Check
-    if (gridSolved()){
-        print(" [ SOLUTION BOARD ]")
-        print("Solved in \(move) steps!")
+    if (move > maxStep){
+        print("Max Step Reached Could Not Find A Solution :(")
+        print("Stopped looking for solution after \(move) steps")
         displayGrid();
-        return true;
-    }    
+        return false;
+    }
+    else{
+        //Final Check
+        if (gridSolved()){
+            print(" [ SOLUTION BOARD ]")
+            print("Solved in \(move) steps!")
+            displayGrid();
+            return true;
+        }    
+    }
 
     return false;
 }
 
 while true{
 	Clear();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-    randInt();
-
-
 
 	//empty grid
 	ResetGrid();
@@ -370,24 +411,13 @@ while true{
         break
     }
 
+    displayGrid()
+
     var legal = true;
 
     //Check for solveable board
     if (boardCreated){
-        for y in 0..<9{
-            for x in 0..<9{
-                gridAlt = grid; //make a backup
-                
-                let num = Int(grid[y][x])!
-                grid[y][x] = "0";
-                if (!isLegal(y,x,num)){
-                    print("NOT LEGAL \(y):\(x)")
-                    //legal = false;
-                }
-
-                grid = gridAlt; //restore backup
-            }
-        }
+        legal = isLegalBoard()
     }
 
 	else{
