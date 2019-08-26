@@ -10,22 +10,22 @@ var gridAlt = Array(repeating: Array(repeating: "0", count: 9), count: 9)
 var increment = 1;
 let maxStep = 100000;
 
-func randInt(_ highRange: Int) -> Int{ //Swift 4.1 doesn't have what I want so i'll just build myself a linear congruential generator
 
+//Name: randInt
+//Desc: randInt is a linear congruential generator that returns a random number from 1 to the argument of highRange
+func randInt(_ highRange: Int) -> Int{
     var result = 0;
     let modulus = 4294967296;
     let multiplier = 22695477;
-    increment += 13;
-    //var seed = Int(Int((Date().timeIntervalSinceReferenceDate)))
-    let timeInSeconds: TimeInterval = Date().timeIntervalSince1970
-    let seed = timeInSeconds;
-    print("RAWTIME: \(timeInSeconds)")
+    increment += 13; //increment by 13 to simulate more time passing
+    let seed: TimeInterval = Date().timeIntervalSince1970 //get current time since 1970 in seconds as a double
+    print("RAWTIME: \(seed)")
 
-    var iseed = Int((Double(multiplier) * seed + Double(increment))) % modulus;
+    var iseed = Int((Double(multiplier) * seed + Double(increment))) % modulus; //convert seed into an int so we can use modulus on it, from there we round our seed to the modulus
 
     print("MOD: \(modulus)\nMULTI: \(multiplier)\nINCRE: \(increment)\nSEED: \(seed)\n\n")
     
-    result = iseed%highRange
+    result = iseed%highRange //round iseed to our highRange argument to get a random number beteen 0 and highRange
     result += 1; //avoid 0 as a result
 
     print("RESULT RANDOM NUMBER IS: \(result)")
@@ -33,50 +33,54 @@ func randInt(_ highRange: Int) -> Int{ //Swift 4.1 doesn't have what I want so i
     return result;
 }
 
+//Name: isLegalBoard
+//Desc: Checks each number in our board to see if it is in a legal position
 func isLegalBoard() -> Bool{
     for y in 0..<9{
         for x in 0..<9{
-            if (grid[y][x] != "0"){
-                gridAlt = grid; //make a backup
+            if (grid[y][x] != "0"){ //skip empty spots
+                gridAlt = grid; //make a backup 
                 
-                let num = Int(grid[y][x])!
+                let num = Int(grid[y][x])! 
                 grid[y][x] = "0";
-                if (!isLegal(y,x,num)){
-                    print("NOT LEGAL \(y):\(x)")
-                    return false;
+                if (!isLegal(y,x,num)){ 
+                    return false; //our board is not legal
                 }
-
                 grid = gridAlt; //restore backup
             }
         }
     }
-    return true;
+    return true; //board is legal
 }
 
+//Name: displayGrid
+//Desc: Goes through all elements of the board and displays them in a grid
 func displayGrid(){
     for y in 0..<9 {
         for x in 0..<9 {
             if (x == 3 || x == 6){
-                print("|", terminator:"");
+                print("|", terminator:""); //horizontal seperator
             }
             print(grid[y][x], terminator:"");
         }
         if (y == 2 || y == 5){
-            print("\n---+---+---");
+            print("\n---+---+---"); //vertical seperator
         }
         else{
-            print("");
+            print(""); //new line
         }
     }
 }
 
+//Name: gridSolved
+//Desc: Checks if the grid is solved
 func gridSolved() -> Bool{
     var result = true;
 
     for y in 0..<9 {
         for x in 0..<9 {
             if (grid[y][x] == "0"){
-                result = false;
+                result = false; //if we found a empty spot return false
             }
         }
     }
@@ -84,6 +88,8 @@ func gridSolved() -> Bool{
     return result;
 }
 
+//Name: ResetGrid
+//Desc: Sets all positions to empty
 func ResetGrid(){
 	for y in 0..<9 {
         for x in 0..<9 {
@@ -92,45 +98,50 @@ func ResetGrid(){
 	}
 }
 
+//Name: Clear
+//Desc: Clears the screen by making 100 newlines
 func Clear(){
     for _ in 0..<100 {
         print("\n")
     }
 }
 
+//Name: randomFill
+//Desc: Generates a new board with numbers in random positions that are legal
 func randomFill() -> Bool{
 
-    let lpamount = randInt(8);
-    var lawyer = false;
+    let lpamount = randInt(8); //how many numbers we want to generate
+    var lawyer = false; //checker for legal board
     
     while !lawyer{
-    ResetGrid();
-    //fill in grid
-    for v in 0..<(3 + lpamount){
-        var placed = false
-        while(!placed){
-            let x = randInt(9)-1;
-            let y = randInt(9)-1;
-            let val = randInt(9);
-            let w = randInt(9000000)%9;
-            let strVal = String(val);
-            if (isLegal(y, x, val)){
-                print("Set \(y):\(x) to \(strVal) and werid thing is \(w)")
-                grid[y][x] = String(w)
-                displayGrid();
-                print("-----------------------------")
-                placed = true
+        ResetGrid(); //reset the board
+        //fill in grid
+        for v in 0..<(3 + lpamount){
+            var placed = false //checker for when we place a number
+            while(!placed){
+                let x = randInt(9)-1; //generarte a random number from 0-8
+                let y = randInt(9)-1; //generarte a random number from 0-8
+                let val = randInt(9); //generarte a random number from 1-9
+                let strVal = String(val); //get string value of val to use later
+                if (isLegal(y, x, val)){ //if our randomised position and number are legal then
+                    print("Set \(y):\(x) to \(strVal)")
+                    grid[y][x] = String(w) //set position on grid to our value
+                    displayGrid();
+                    print("-----------------------------")
+                    placed = true //we have placed a number
+                }
             }
         }
-    }
-    lawyer = isLegalBoard();  
+        lawyer = isLegalBoard(); //check if generated board is legal
     }
 
-    print("randomly done")
+    //print("randomly done") //done
 
 	return true;
 }
 
+//Name: predefinedFill
+//Desc: Sets up a board that has been predefined
 func predefinedFill() -> Bool{
 
 	//rows (y,x)
@@ -174,19 +185,22 @@ func predefinedFill() -> Bool{
 	return true;
 }
 
+//Name: userFill
+//Desc: Takes user input to create a board
 func userFill() -> Bool{
     print("User Definied Grid\n")
     
     var userInputIsCorrect = false;
     var userGrid = Array(repeating: " ", count: 9)
+
     //While the user is not giving us valid input
-    
     while (!userInputIsCorrect){
         
-        Clear();
+        Clear(); //clear the screen
         
         print("-= User Supplied Grid =-")
         
+        //reset users grid
         for i in 0..<9 {
             userGrid[i] = " ";
         }
@@ -194,7 +208,6 @@ func userFill() -> Bool{
         var userUsageCount = 1;
         
         //user input
-        
         for i in 0..<9 {
             print("Please Input One Line Of 9 Numbers For Row \(userUsageCount): ")
             let l1 = readLine(strippingNewline: true); //set to true to ignore newlines and char combinations
@@ -203,9 +216,9 @@ func userFill() -> Bool{
         }
         
         //check user input for bad input
-        
         userInputIsCorrect = true
         
+        //check for invalid length
         for i in 0..<9{
             if (userGrid[i].count != 9){
                 userInputIsCorrect = false
@@ -213,17 +226,15 @@ func userFill() -> Bool{
         }
         
         if (userInputIsCorrect){
-            
             print("Try and convert values")
-            //Try and convert values
-            
+            //Try and convert user values
             for i in 0..<9 {
                 for j in 0..<9{
                     print(i)
                     print(j)
                     print(String(userGrid[i][userGrid[i].index(userGrid[i].startIndex, offsetBy: j)]))
-                    if let _ = Int(String(userGrid[i][userGrid[i].index(userGrid[i].startIndex, offsetBy: j)])){
-                        
+                    if let _ = Int(String(userGrid[i][userGrid[i].index(userGrid[i].startIndex, offsetBy: j)])){ //if we can convert user input into valid variables then
+                        //success
                     }
                     else{
                         print("Something went wrong 🙃")
@@ -237,9 +248,11 @@ func userFill() -> Bool{
         Clear();
         
         if (userInputIsCorrect){
-            break; //escape while loop
+            break; //escape while loop because user has supplied correct input
         }
         
+        //user has not supplied correct input
+
         print("User Input Invalid Please Input Numbers For Each Row. Example: 123456789")
         print("Press Enter To Continue")
         let _ = readLine();
@@ -257,7 +270,8 @@ func userFill() -> Bool{
     return true;
 }
 
-//is the value used in our row
+//Name: usedInRow
+//Desc: Is the value used in our row
 func usedInRow(_ row: Int, _ value: String) -> Bool{
     for i in 0..<9{
         if (grid[row][i] == value){
@@ -267,7 +281,8 @@ func usedInRow(_ row: Int, _ value: String) -> Bool{
     return false;
 }
 
-//Is the value used in our column
+//Name: usedInRow
+//Desc: Is the value used in our column
 func usedInCol(_ col: Int, _ value: String) -> Bool{
     for i in 0..<9{
         if (grid[i][col] == value){
@@ -276,8 +291,8 @@ func usedInCol(_ col: Int, _ value: String) -> Bool{
     }
     return false;
 }
-
-//Is the value used in our 3x3 box
+//Name: usedInRow
+//Desc: Is the value used in our 3x3 box
 func usedInBox(_ topLeftRow: Int, _ topLeftCol: Int, _ value: String) -> Bool{
     for y in 0..<3{
         for x in 0..<3{
@@ -289,6 +304,8 @@ func usedInBox(_ topLeftRow: Int, _ topLeftCol: Int, _ value: String) -> Bool{
     return false;
 }
 
+//Name: findEmpty
+//Desc: finds the first empty position on the grid and returns the x and y in a tuple
 func findEmpty() -> gridPosition{
     var result = (-1,-1);
 
@@ -307,54 +324,53 @@ func findEmpty() -> gridPosition{
     return result
 }
 
-//checks if a number is in a legal position
+//Name: isLegal
+//Desc: Checks if a number is in a legal position on the board
 func isLegal(_ row: Int, _ col: Int, _ value: Int) -> Bool{
     //If value is not used in the same row, column or box then it is legal
     return !usedInRow(row, String(value)) && !usedInCol(col, String(value)) && !usedInBox(row - row % 3, col - col % 3, String(value));
 }
 
-//attempts to find a solution
+//Name: DownTheRabbitHole
+//Desc: Attempts to find a solution via recursive functions
 func DownTheRabbitHole() -> Bool{
 
-    //Show our current Step
-    //print("\n\n [ Solve Step: \(move) ]")
+    //Update our current step counter
     move -= -((move/move*Int("1")!) * Int(~importantMath)); //move ++;
-    //displayGrid();
 
-    let row = findEmpty().0;
+    //find an empty spot on the board
+
+    let row = findEmpty().0; 
     let col = findEmpty().1;
 
-    //print(" [ DEBUG COL: \(col) ROW: \(row) ]")
-
-    //we found a solution because grid is full
+    //we found a solution because grid is full or we have exceeded our maximum steps so exit
     if (col == -1 && row == -1 || move > maxStep){
         return true;
     }
 
+    //for values 1-9 try and fill the empty spot
     for i in 1..<10{
-        //we can fill a spot in legally
+        //can we can fill a spot in legally
         if (isLegal(row, col, i)){
-            grid[row][col] = String(i);
-            //print(" CHANGED ROW: \(row) AND COL: \(col) TO: \(i)")
-            //displayGrid()
+            grid[row][col] = String(i); //set the position on the grid to our value
 
             //recursive
             if (DownTheRabbitHole()){
-                return true;
+                return true; //we found a valid number backtrace
             }
 
             //if failed
-            grid[row][col] = "0";
+            grid[row][col] = "0"; //reset position on the grid because we failed
 
         }
     }
-    
 
     //bad number backtrack to previous numbers
     return false;
 }
 
-//Solves the puzzle
+//Name: Solve
+//Desc: Starts the recursive function to solve the puzzle as well as outputting if we solved it successfully or not
 func Solve() -> Bool{
 
     print("Solving...")
@@ -368,13 +384,13 @@ func Solve() -> Bool{
         DownTheRabbitHole();
     }
 
-    if (move > maxStep){
+    if (move > maxStep){ //failed to find solution
         print("Max Step Reached Could Not Find A Solution :(")
         print("Stopped looking for solution after \(move) steps")
         displayGrid();
         return false;
     }
-    else{
+    else{ //found solution
         //Final Check
         if (gridSolved()){
             print(" [ SOLUTION BOARD ]")
@@ -384,18 +400,22 @@ func Solve() -> Bool{
         }    
     }
 
-    return false;
+    return false; //solver failed to run correctly
 }
 
+//main loop of program
 while true{
+    //clear screen
 	Clear();
 
-	//empty grid
+	//empty grid and reset counter
 	ResetGrid();
     move = 1;
 
+    //main menu
 	print ("-= Sudoku Solver =-\n ~Henry Oliver \n 1. User Defined Board\n 2. Randomly Generated Board\n 3. Solve Predefined Problem\n 99. Exit");
-	//displayGrid();
+
+    //take user input and complete action based on user choice
 	let c = readLine();
 	var boardCreated = false;
 	if (c == "1"){
@@ -411,23 +431,23 @@ while true{
         break
     }
 
-    displayGrid()
+    displayGrid() //display the grid
 
+
+    //Check for solveable board    
     var legal = true;
-
-    //Check for solveable board
     if (boardCreated){
         legal = isLegalBoard()
     }
-
 	else{
 		print("\nInput was incorrect")
 	}
+    //if our board is legal then
 	if (boardCreated && legal){
         Clear();
         print(" [ BOARD ]")
 		displayGrid();
-        let solvedResult = Solve();
+        let solvedResult = Solve(); //attempt to find a solution
         if (solvedResult){
             print("Solution Found!")
         }
@@ -436,10 +456,11 @@ while true{
             print("Could not find solution :(")
         }
 	}
+    //if our board is not legal then
     else if (!legal && boardCreated){
         print("Unsolvable Board Detected!")
     }
     print("Press Enter To Continue")
-	let _ = readLine();
+	let _ = readLine(); //pause
 	
 }
