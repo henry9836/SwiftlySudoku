@@ -21,7 +21,7 @@ func randInt(_ highRange: Int) -> Int{
     let seed: TimeInterval = Date().timeIntervalSince1970 //get current time since 1970 in seconds as a double
     print("RAWTIME: \(seed)")
 
-    var iseed = Int((Double(multiplier) * seed + Double(increment))) % modulus; //convert seed into an int so we can use modulus on it, from there we round our seed to the modulus
+    let iseed = Int((Double(multiplier) * seed + Double(increment))) % modulus; //convert seed into an int so we can use modulus on it, from there we round our seed to the modulus
 
     print("MOD: \(modulus)\nMULTI: \(multiplier)\nINCRE: \(increment)\nSEED: \(seed)\n\n")
     
@@ -116,7 +116,7 @@ func randomFill() -> Bool{
     while !lawyer{
         ResetGrid(); //reset the board
         //fill in grid
-        for v in 0..<(3 + lpamount){
+        for _ in 0..<(3 + lpamount){
             var placed = false //checker for when we place a number
             while(!placed){
                 let x = randInt(9)-1; //generarte a random number from 0-8
@@ -125,7 +125,7 @@ func randomFill() -> Bool{
                 let strVal = String(val); //get string value of val to use later
                 if (isLegal(y, x, val)){ //if our randomised position and number are legal then
                     print("Set \(y):\(x) to \(strVal)")
-                    grid[y][x] = String(w) //set position on grid to our value
+                    grid[y][x] = String(val) //set position on grid to our value
                     displayGrid();
                     print("-----------------------------")
                     placed = true //we have placed a number
@@ -381,7 +381,7 @@ func Solve() -> Bool{
 
     //while our grid is not solved solve the grid
     while(!gridSolved() && move < maxStep){
-        DownTheRabbitHole();
+        let _ = DownTheRabbitHole();
     }
 
     if (move > maxStep){ //failed to find solution
