@@ -1,3 +1,18 @@
+//
+// (c) Copyright
+// Media Design School
+// Bachelor of Software Engineering
+// 2019
+//
+// Batch: 19022A
+// Class: GD2S03
+//
+// File: main.swift
+// Description: This script solves sudoku puzzles
+// Author: Henry Oliver
+// Email: henry983615@gmail.com
+//
+
 import Foundation
 
 typealias gridPosition = (Int, Int) //tuple to hold x and y
